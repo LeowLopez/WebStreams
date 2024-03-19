@@ -23,15 +23,15 @@ createServer(async (request, response) => {
     // createReadStream('./animeflv.csv')
     // .pipe(response)
     
-    let cont = 0;
+    let count = 0;
     
-    request.once('close', _ => console.log(`req connection was closed! Cont: `, cont))
+    request.once('close', _ => console.log(`req connection was closed! Count: `, count))
     
     // To use in Web:
     Readable.toWeb(createReadStream('./animeflv.csv'))
         //for each item that will be transported
         .pipeThrough(new Transform.toWeb(csvtojson()))
-        //yes, could be used more than one time
+        //yes, it could be used more than one time
         .pipeThrough(new TransformStream({
             transform(chunk, controller){
                 const data = JSON.parse(Buffer.from(chunk))
@@ -47,7 +47,7 @@ createServer(async (request, response) => {
         //last step
         .pipeTo(new WritableStream({
             write(chunk) {
-                cont++
+                count++
                 response.write(chunk)
             },
             close() {
